@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="沿着一条时间轴，读懂中国历史的分合。可探索的中国朝代与并行政权脉络图，包含精确年代、分支关系、历史说明与资料来源。">
+  <meta name="theme-color" content="#f6f4ed">
+  <title>华夏脉络 · 中国历史朝代时间轴</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#explorer">跳到历史脉络图</a>
+<header class="masthead">
+  <a class="brand" href="#" aria-label="华夏脉络首页"><span class="seal" aria-hidden="true">史</span><span>华夏脉络 <small>CHRONICLES OF CHINA</small></span></a>
+  <nav aria-label="网站导航"><a href="#explorer">探索时间轴 <span>↘</span></a><button id="method-button" class="text-button">如何阅读</button><a href="https://github.com/KingXcode/china-dynasty-timeline" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 查看项目源码">GitHub ↗</a></nav>
+</header>
+<main>
+  <section class="hero" aria-labelledby="page-title">
+    <div class="hero-copy"><p class="eyebrow"><span></span> 一条时间轴，看见历史的分与合</p><h1 id="page-title">千年兴替，<br>自有<span>脉络。</span></h1><p class="intro">朝代并不总是前后相继。让同时存在的政权并行，<br class="desktop-break">让悠长岁月有尺度，让每一次分合清晰可见。</p><a class="primary-link" href="#explorer">开始探索 <span>↓</span></a></div>
+    <div class="hero-art" aria-hidden="true"><div class="art-label">HISTORY IS NOT A SINGLE LINE</div><svg viewBox="0 0 480 290"><defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f6f4ed" stop-opacity="0"/><stop offset="1" stop-color="#f6f4ed"/></linearGradient></defs><path class="art-grid" d="M0 62H480M0 138H480M0 214H480"/><path class="art-main" d="M165 0V72C165 108 165 110 165 138V290"/><path class="art-branch jade" d="M165 62C165 98 315 98 315 138V214C315 254 165 254 165 290"/><path class="art-branch ochre" d="M165 62C165 112 55 112 55 151V188C55 228 165 228 165 270"/><path class="art-branch blue" d="M315 138C315 168 425 168 425 202V290"/><circle cx="165" cy="62" r="9" class="art-node"/><circle cx="165" cy="214" r="9" class="art-node"/><circle cx="315" cy="138" r="8" class="art-node green"/><circle cx="55" cy="151" r="7" class="art-node yellow"/><circle cx="425" cy="202" r="7" class="art-node slate"/><text x="188" y="65">承续</text><text x="336" y="140">并立</text><text x="78" y="155">分流</text><text x="188" y="218">汇合</text><rect x="0" y="245" width="480" height="45" fill="url(#fade)"/></svg><div class="art-caption">不止朝代更替，也看见同一时代的不同支流。</div></div>
+  </section>
+  <section class="stats" aria-label="资料概况"><div><strong>4,000<span>余年</span></strong><p>从夏商周到现代</p></div><div><strong id="record-count">—<span>个</span></strong><p>朝代、政权与历史阶段</p></div><div><strong>01<span>条</span></strong><p>共享年代，理解并立</p></div><p class="stats-note">以常用纪年为基础<br>存疑年代与不同口径均附说明 <span>↗</span></p></section>
+  <section id="explorer" class="explorer" aria-labelledby="explorer-title">
+    <div class="section-heading"><div><p class="eyebrow">EXPLORE THE TIMELINE</p><h2 id="explorer-title">历史，沿时间展开</h2></div><p>点击节点，读懂一个朝代。<br>选择时代，展开更细的历史支流。</p></div>
+    <div class="control-bar"><div class="view-tabs" role="group" aria-label="呈现方式"><button id="graph-view" aria-pressed="true"><span>⑂</span> 脉络图</button><button id="list-view" aria-pressed="false"><span>☷</span> 年代表</button></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" placeholder="搜索朝代、政权或地区" aria-label="搜索朝代、政权或地区"><kbd>/</kbd></label><button id="reset" class="subtle-button" title="清除筛选并回到总览">重置 ↺</button></div>
+    <div class="era-nav" id="era-nav" role="group" aria-label="按时代浏览"></div>
+    <div class="workspace">
+      <div class="chart-card">
+        <div class="chart-heading"><div><span class="tiny-label" id="era-label">全局视角</span><h3 id="chart-title">朝代主线</h3><p id="chart-subtitle">主干朝代与主要并行政权</p></div><div class="chart-options"><label class="scale-control"><input id="exact-scale" type="checkbox"><span>等比例时间轴</span></label><div class="zoom-control" role="group" aria-label="时间轴缩放"><button id="zoom-out" aria-label="缩小时间轴">−</button><output id="zoom-label">100%</output><button id="zoom-in" aria-label="放大时间轴">＋</button></div></div></div>
+        <div class="legend"><span><i class="legend-line"></i>政权存续</span><span><i class="legend-node"></i>起讫节点</span><span><i class="legend-dash"></i>关联 / 承续</span><span><i class="legend-break">≈</i>折叠时段</span><button id="show-all" class="text-button">查看全部记录 ↗</button></div>
+        <p id="chart-hint" class="chart-hint">同一水平线代表同一年。虚线仅提示历史关联，不表示合法性或完整继承关系。</p>
+        <div id="result-status" class="sr-only" role="status" aria-live="polite"></div>
+        <div class="chart-scroll" id="chart-scroll" tabindex="0" aria-label="历史脉络图，可上下和左右滚动"><div id="chart"></div></div>
+        <div id="list" class="record-list" hidden></div>
+        <div id="empty" class="empty-state" hidden><span>⌕</span><h3>这条支流，还未找到</h3><p>换一个朝代名称，或试试“北方”“云南”等地区关键词。</p><button id="clear-search" class="subtle-button">清除搜索</button></div>
+        <div class="chart-footer"><span id="visible-count"></span><span>横向滑动查看并立支流 ↔</span></div>
+      </div>
+      <aside class="detail-panel" id="detail-panel" aria-labelledby="detail-title"><div id="detail-content"></div></aside>
+    </div>
+  </section>
+  <section class="reading-notes" aria-labelledby="notes-heading"><div><p class="eyebrow">A NOTE ON HISTORY</p><h2 id="notes-heading">有尺度，也保留余地。</h2><p>时间轴让历史更容易读懂，但不能替代历史本身。</p></div><div class="notes-grid"><article><span>01 / 年代</span><h3>精确到年，不伪造确定性</h3><p>使用常见起讫纪年。夏商周早期及部分割据政权存在不同说法，详细卡片注明近似与口径差异；神话传说不与确切年代混排。</p></article><article><span>02 / 比例</span><h3>省略长度，不省略历史</h3><p>总览将事件稀疏的长时段折叠，以波纹带明确标示起讫年份。所有支流共用同一刻度；开启“等比例时间轴”可恢复统一比例。</p></article><article><span>03 / 范围</span><h3>不只主线，也看支流</h3><p>收录主要王朝及重要并行政权，展开时代可查看诸侯、十六国、五代十国等。并非所有地方势力的穷尽名录；现代部分按明确的叙述范围呈现。</p></article></div></section>
+  <section class="source-section" id="sources" aria-labelledby="sources-title"><div class="section-heading"><div><p class="eyebrow">SOURCES & METHODOLOGY</p><h2 id="sources-title">有据可循</h2></div><p>点击各记录中的来源，查看年代与背景依据。</p></div><div id="source-list" class="source-list"></div></section>
+</main>
+<footer class="site-footer"><a class="brand" href="#"><span class="seal">史</span><span>华夏脉络</span></a><p>在时间里，读懂中国。<span>纯 HTML · CSS · JavaScript</span></p><a href="https://github.com/KingXcode/china-dynasty-timeline" target="_blank" rel="noopener noreferrer">查看源码 ↗</a></footer>
+<dialog id="method-dialog" aria-labelledby="method-title"><button id="close-method" class="close-button" aria-label="关闭阅读说明">×</button><p class="eyebrow">READING THE BRANCHES</p><h2 id="method-title">如何读这张脉络图</h2><ol><li><strong>从上往下，时间向前。</strong>左侧为年份，纵向线段是政权的存续区间。同一横线就是同一年。</li><li><strong>左右并排，不是前后相继。</strong>颜色和分支用于区分同时存在的政权，不表示地理距离、统治面积或正统地位。</li><li><strong>先看主线，再展开时代。</strong>选择上方时代标签，可以看到更多区域政权。搜索会从全部记录中寻找。</li><li><strong>波纹处，是明确的时间折叠。</strong>带内标明起讫年份；勾选等比例时间轴可取消折叠。传说时代另列，不投射虚假的精确日期。</li><li><strong>点击任一节点查看解释。</strong>记录包含纪年口径、同代政权及可核查的参考来源。公元纪年没有零年。</li></ol><button id="got-it" class="primary-button">开始阅读 ↓</button></dialog>
+<noscript><div class="noscript">此页面的交互时间轴需要启用 JavaScript。项目数据与来源也可在 GitHub 的 data.js 中查阅。</div></noscript>
+</body>
+</html>
