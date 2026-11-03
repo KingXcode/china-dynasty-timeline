@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const root = path.resolve(__dirname, '..');
-const context = {window:{}};
+const context = {window:{addEventListener(){}}};
 vm.runInNewContext(fs.readFileSync(path.join(root,'data.js'),'utf8'),context);
 const {dynasties:ds, sources, eras} = context.window.HISTORY_DATA;
 assert(ds.length >= 100, 'Expanded historical coverage');
@@ -31,9 +31,9 @@ assert.equal(record('qing').start,1636);
 assert(!overlap(record('tang-first'),record('wu-zhou')));
 assert(!overlap(record('wu-zhou'),record('tang-restored')));
 // Capture pure date/scale helpers with a tiny DOM substitute, no browser dependency.
-function node(){return {classList:{add(){},remove(){},toggle(){}},style:{},dataset:{},addEventListener(){},setAttribute(){},append(){},replaceChildren(){},querySelectorAll(){return []},focus(){},getBoundingClientRect(){return {}},innerHTML:'',textContent:'',tagName:'BODY'};}
+function node(){return {attrs:{},children:[],classList:{add(){},remove(){},toggle(){}},style:{},dataset:{},addEventListener(){},setAttribute(k,v){this.attrs[k]=v},append(...items){this.children.push(...items)},replaceChildren(...items){this.children=items},querySelectorAll(){return []},focus(){},getBoundingClientRect(){return {}},innerHTML:'',textContent:'',tagName:'BODY'};}
 const dom=new Map();const get=s=>{if(!dom.has(s))dom.set(s,node());return dom.get(s)};
-const document={querySelector:get,querySelectorAll:()=>[],createElement:node,createElementNS:node,body:node(),addEventListener(){},activeElement:node()};
+const document={querySelector:get,querySelectorAll:()=>[],createElement:node,createElementNS:node,body:node(),addEventListener(){},activeElement:node(),documentElement:{clientWidth:390}};
 Object.assign(context,{document,Date,URL,matchMedia:()=>({matches:false,addEventListener(){}})});
 vm.runInNewContext(fs.readFileSync(path.join(root,'app.js'),'utf8'),context);
 const h=context.window.HistoryTimeline;
@@ -49,3 +49,21 @@ for(const selected of [ds.filter(d=>d.core),ds]){
 }
 assert.equal(h.filterRecords().length,ds.filter(d=>d.core).length);
 console.log(`PASS: ${ds.length} records, ${sources.length} sources, ${eras.length} eras; data, chronology, overlaps, and scale checks.`);
+
+// Realistic phone widths: every branch and every label stays in the viewport.
+function descendants(n){return [n,...(n.children||[]).flatMap(descendants)]}
+for(const viewport of [320,375,390,430]){
+  document.documentElement.clientWidth=viewport;get('#chart-scroll').clientWidth=viewport-34;
+  h.renderMobileGraph(ds);
+  const svg=get('#chart').children[0];assert.equal(Number(svg.attrs.width),viewport-34);
+  const els=descendants(svg);
+  assert.equal(els.filter(x=>x.attrs?.role==='button').length,ds.length);
+  for(const e of els.filter(x=>x.attrs?.class==='mobile-label-bg'))assert(Number(e.attrs.x)+Number(e.attrs.width)<=viewport-34,'Phone labels fit');
+  const sameYear=new Map();
+  for(const g of els.filter(x=>x.attrs?.['aria-hidden']==='true'&&x.attrs?.['data-id'])){
+    const d=record(g.attrs['data-id']);const cy=g.children.find(x=>x.attrs?.cy!==undefined).attrs.cy;
+    if(sameYear.has(d.start))assert.equal(cy,sameYear.get(d.start),'Same year aligns across all mobile lanes');
+    sameYear.set(d.start,cy);
+  }
+}
+console.log('PASS: 320 / 375 / 390 / 430 px mobile SVG fit, complete record count, same-year alignment.');

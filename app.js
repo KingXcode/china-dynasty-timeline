@@ -69,7 +69,80 @@
     return el;
   }
 
+  function renderMobileGraph(selected) {
+    const chart=$('#chart'); chart.replaceChildren();
+    if(!selected.length)return;
+    const currentEra=eras.find(e=>e.id===state.era);
+    let start=Math.min(...selected.map(d=>d.start)),end=Math.max(...selected.map(d=>d.end));
+    if(currentEra&&!state.query){start=currentEra.start;end=currentEra.end;}
+    const width=Math.max(280,$('#chart-scroll').clientWidth||document.documentElement.clientWidth-34);
+    const events=[...new Set([start,end,...selected.flatMap(d=>[Math.max(start,d.start),Math.min(end,d.end)])])].sort((a,b)=>a-b);
+    const starts=new Map(events.map(t=>[t,selected.filter(d=>Math.max(start,d.start)===t)]));
+    const positions=new Map();
+    let cursor=48;
+    for(let i=0;i<events.length;i++){
+      const t=events[i]; positions.set(t,cursor);
+      if(i<events.length-1){
+        const gap=span(t,events[i+1]);
+        // Compact mobile is explicitly non-linear: reserve readable event labels,
+        // then cap otherwise empty time. Every lane uses the SAME mapping.
+        const labelSpace=Math.max(0,(starts.get(t)?.length||0)*37);
+        cursor+=Math.max(24,labelSpace+10)+Math.min(46,Math.max(12,Math.log2(gap+1)*5))*state.zoom;
+      }
+    }
+    const exactPx=1.1*state.zoom;
+    const y=t=>state.exact?48+span(start,t)*exactPx:positions.get(t);
+    const lanes=[],layout=[];
+    for(const d of selected){
+      const a=Math.max(start,d.start),b=Math.min(end,d.end);
+      let lane=lanes.findIndex(last=>last<=a);if(lane<0)lane=lanes.length;
+      lanes[lane]=b;layout.push({d,a,b,lane,s:y(a),e:y(b)});
+    }
+    const laneStep=Math.min(10,(width-194)/Math.max(1,lanes.length));
+    const railStart=45,labelX=railStart+lanes.length*laneStep+13;
+    const labelWidth=width-labelX-10;
+    let lastLabel=-Infinity;
+    for(const item of layout){
+      item.labelY=Math.max(item.s-12,lastLabel+37);lastLabel=item.labelY;
+    }
+    const height=Math.max(y(end)+55,lastLabel+62);
+    const svg=svgEl('svg',{class:'history-svg mobile-history-svg',width,height,viewBox:`0 0 ${width} ${height}`,role:'group','aria-label':`手机紧凑历史脉络图，${selected.length} 条记录`});
+    svg.append(svgEl('title',{},state.exact?'等比例时间轴；名称标签通过引线连接到准确年份。':'紧凑时间轴，各段比例不同；同一高度代表同一年，全部并立分支在屏幕内。'));
+    const bg=svgEl('g',{'aria-hidden':'true'});svg.append(bg);
+    bg.append(svgEl('text',{x:7,y:20,class:'lane-label'},'年份'));
+    bg.append(svgEl('text',{x:labelX,y:20,class:'lane-label'},'朝代 / 政权 · 点按查看'));
+    const seen=[];
+    for(const t of events){const py=y(t);if(seen.some(v=>Math.abs(v-py)<22))continue;seen.push(py);
+      bg.append(svgEl('line',{x1:37,y1:py,x2:width-8,y2:py,class:'grid-line'}));
+      bg.append(svgEl('text',{x:36,y:py+3,'text-anchor':'end',class:'year'},year(t)));
+    }
+    const paths=svgEl('g',{}),labels=svgEl('g',{});svg.append(paths,labels);
+    for(const n of layout){const {d,s,e,lane,labelY}=n,x=railStart+lane*laneStep,c=color(d);
+      const lineGroup=svgEl('g',{class:`record${state.selected===d.id?' selected':''}`,'data-id':d.id,'aria-hidden':'true'});
+      lineGroup.append(svgEl('line',{x1:x,y1:s,x2:x,y2:e,stroke:c,class:'dynasty-line',...(d.approximate?{'stroke-dasharray':'4 3'}:{})}));
+      lineGroup.append(svgEl('circle',{cx:x,cy:s,r:3.5,fill:'#fffef9',stroke:c,'stroke-width':1.8}));
+      lineGroup.append(svgEl('circle',{cx:x,cy:e,r:2,fill:'#fffef9',stroke:c,'stroke-width':1.4}));
+      lineGroup.append(svgEl('path',{d:`M${x+3.5} ${s}H${labelX-8}L${labelX} ${labelY+13}`,stroke:c,'stroke-width':.7,opacity:.45,fill:'none'}));paths.append(lineGroup);
+      const button=svgEl('g',{class:`record mobile-record${state.selected===d.id?' selected':''}`,role:'button',tabindex:0,'data-id':d.id,'aria-pressed':String(state.selected===d.id),'aria-label':`${d.name}，${dateRange(d)}。查看详情`});
+      button.append(svgEl('rect',{x:labelX-3,y:labelY-2,width:labelWidth+3,height:35,rx:4,fill:'#fffef9',class:'mobile-label-bg'}));
+      button.append(svgEl('rect',{x:labelX-3,y:labelY-2,width:labelWidth+3,height:35,rx:4,class:'hit-area'}));
+      button.append(svgEl('text',{x:labelX+3,y:labelY+12,class:'node-name'},d.name));
+      button.append(svgEl('text',{x:labelX+3,y:labelY+26,class:'node-dates'},dateRange(d)));
+      button.addEventListener('click',()=>selectRecord(d.id,button));button.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();selectRecord(d.id,button);}});labels.append(button);
+    }
+    if(!state.exact){for(let i=0;i<events.length-1;i++){
+      const a=events[i],b=events[i+1],gap=span(a,b);if(gap<80)continue;
+      const top=y(a)+Math.max(0,(starts.get(a)?.length||0)*37)+10;
+      const bottom=y(b)-14;if(bottom-top<7)continue;
+      const mid=(top+bottom)/2;
+      bg.append(svgEl('text',{x:labelX+3,y:mid+3,class:'fold-label'},`⋯ ${gap} 年间隔 · 已压缩`));
+    }}
+    chart.append(svg);
+    $('#chart-hint').textContent=state.exact?'等比例刻度；各支流同年对齐。为避免重叠，名称标签用细引线连接到准确节点。':'手机紧凑刻度：所有分支一屏宽，同年对齐。各段比例不同，完整起讫年写在名称下方；点按可查看详情。';
+  }
+
   function renderGraph(selected) {
+    if(matchMedia('(max-width:800px)').matches){renderMobileGraph(selected);return;}
     const chart=$('#chart'); chart.replaceChildren();
     if (!selected.length) return;
     const currentEra=eras.find(e=>e.id===state.era);
@@ -166,6 +239,7 @@
     $('#graph-view').setAttribute('aria-pressed',String(state.view==='graph'));
     $('#list-view').setAttribute('aria-pressed',String(state.view==='list'));
     document.querySelectorAll('.era-nav button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.era===state.era&&!state.query)));
+    $('#mobile-era').value=state.era;
     $('#era-label').textContent=state.query?'SEARCH RESULTS':state.era==='overview'?'全局视角 / OVERVIEW':state.era==='all'?'完整收录 / ALL RECORDS':`${year(era?.start)}—${year(era?.end)}`;
     $('#chart-title').textContent=state.query?`搜索「${state.query}」`:state.era==='overview'?'朝代主线':state.era==='all'?'全部历史支流':era?.name||'历史脉络';
     $('#chart-subtitle').textContent=state.query?'搜索覆盖全部已收录记录':state.era==='overview'?'主干朝代与主要并行政权，选择时代展开更多':state.era==='all'?'完整记录较多，可选择具体时代缩小范围':era?.description||'同一时代，并行存在的历史支流';
@@ -175,6 +249,8 @@
     $('#visible-count').textContent=`显示 ${selected.length} / ${records.length} 条记录${state.era==='overview'&&!state.query?' · 总览主线':''}`;
     $('#result-status').textContent=`找到 ${selected.length} 条历史记录`;
     $('#zoom-label').textContent=`${Math.round(state.zoom*100)}%`;
+    const mobile=matchMedia('(max-width:800px)').matches;
+    document.querySelector('.chart-footer span:last-child').textContent=mobile?'分支一屏宽 · 上下阅读':'横向滑动查看并立支流 ↔';
     $('#zoom-out').disabled=state.zoom<=.5;
     $('#zoom-in').disabled=state.zoom>=2;
     $('#exact-scale').checked=state.exact;
@@ -213,10 +289,13 @@
   shade.addEventListener('click',closeDetail);
   $('#record-count').innerHTML=`${records.length}<span>项</span>`;
   const nav=$('#era-nav');
+  const mobileSelect=$('#mobile-era');
   [{id:'overview',name:'总览主线'},...eras,{id:'all',name:'全部记录'}].forEach(e=>{
     const button=document.createElement('button');button.type='button';button.dataset.era=e.id;button.textContent=e.name;button.setAttribute('aria-pressed',e.id==='overview'?'true':'false');
     button.addEventListener('click',()=>{state.era=e.id;state.query='';$('#search').value='';render();});nav.append(button);
+    const option=document.createElement('option');option.value=e.id;option.textContent=e.name;mobileSelect.append(option);
   });
+  mobileSelect.addEventListener('change',event=>{state.era=event.target.value;state.query='';$('#search').value='';render();});
   $('#source-list').innerHTML=sourceList.map(s=>`<a class="source-card" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span>${esc(s.title)}<small>${esc(new URL(s.url).hostname)}</small></a>`).join('');
   $('#graph-view').addEventListener('click',()=>{state.view='graph';render();});
   $('#list-view').addEventListener('click',()=>{state.view='list';render();});
@@ -244,7 +323,9 @@
     }
     if(event.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&!dialog.open){event.preventDefault();$('#search').focus();$('#explorer').scrollIntoView({behavior:motion()});}});
   // Close mobile-only overlay when moving to desktop; keeps resize/repeated flows clean.
-  matchMedia('(max-width:800px)').addEventListener('change',e=>{if(!e.matches)closeDetail();});
-  window.HistoryTimeline = {ordinal,span,formatYear:year,makeScale,filterRecords,getState:()=>({...state}),records};
+  matchMedia('(max-width:800px)').addEventListener('change',e=>{if(!e.matches)closeDetail();render();});
+  let resizeTimer;
+  window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(matchMedia('(max-width:800px)').matches&&state.view==='graph')renderGraph(filterRecords());},150);});
+  window.HistoryTimeline = {ordinal,span,formatYear:year,makeScale,renderMobileGraph,filterRecords,getState:()=>({...state}),records};
   defaultDetail();render();
 })();
