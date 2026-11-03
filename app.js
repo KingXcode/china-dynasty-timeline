@@ -122,6 +122,8 @@
       lineGroup.append(svgEl('line',{x1:x,y1:s,x2:x,y2:e,stroke:c,class:'dynasty-line',...(d.approximate?{'stroke-dasharray':'4 3'}:{})}));
       lineGroup.append(svgEl('circle',{cx:x,cy:s,r:3.5,fill:'#fffef9',stroke:c,'stroke-width':1.8}));
       lineGroup.append(svgEl('circle',{cx:x,cy:e,r:2,fill:'#fffef9',stroke:c,'stroke-width':1.4}));
+      if(d.start<start)lineGroup.append(svgEl('path',{d:`M${x-3} ${s+5}L${x} ${s-1}L${x+3} ${s+5}`,fill:'none',stroke:c,'stroke-width':1.5,class:'continuation-start'}));
+      if(d.end>end)lineGroup.append(svgEl('path',{d:`M${x-3} ${e-5}L${x} ${e+1}L${x+3} ${e-5}`,fill:'none',stroke:c,'stroke-width':1.5,class:'continuation-end'}));
       lineGroup.append(svgEl('path',{d:`M${x+3.5} ${s}H${labelX-8}L${labelX} ${labelY+13}`,stroke:c,'stroke-width':.7,opacity:.45,fill:'none'}));paths.append(lineGroup);
       const button=svgEl('g',{class:`record mobile-record${state.selected===d.id?' selected':''}`,role:'button',tabindex:0,'data-id':d.id,'aria-pressed':String(state.selected===d.id),'aria-label':`${d.name}，${dateRange(d)}。查看详情`});
       button.append(svgEl('rect',{x:labelX-3,y:labelY-2,width:labelWidth+3,height:35,rx:4,fill:'#fffef9',class:'mobile-label-bg'}));
@@ -138,7 +140,8 @@
       bg.append(svgEl('text',{x:labelX+3,y:mid+3,class:'fold-label'},`⋯ ${gap} 年间隔 · 已压缩`));
     }}
     chart.append(svg);
-    $('#chart-hint').textContent=state.exact?'等比例刻度；各支流同年对齐。为避免重叠，名称标签用细引线连接到准确节点。':'手机紧凑刻度：所有分支一屏宽，同年对齐。各段比例不同，完整起讫年写在名称下方；点按可查看详情。';
+    $('#chart-hint').textContent=state.exact?'等比例刻度；各支流同年对齐。为避免重叠，名称标签用细引线连接到准确节点。':'手机紧凑刻度：所有分支一屏宽，同年对齐。各段比例不同，完整年代见名称下方。';
+    if(currentEra&&!state.query)$('#chart-hint').textContent+=' 边界箭头表示超出所选时代，非真实起讫。';
   }
 
   function renderGraph(selected) {
