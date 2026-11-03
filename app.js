@@ -22,7 +22,7 @@
   const dateRange = d => d.dateLabel || `${d.approximate ? '约 ' : ''}${year(d.start)} — ${d.ongoing || d.end === now ? '至今' : year(d.end)}`;
   const palette = ['#a2573d','#547b67','#8e7b9f','#527d91','#ae9453','#6b8c80','#b67870','#77864d','#5c759d','#a58a77','#7c8a90','#ae7250'];
   const groups = [...new Set(records.map(d => d.group || '其他'))];
-  const color = d => d.color || palette[Math.max(0,groups.indexOf(d.group)) % palette.length];
+  const color = d => d.color || palette[records.findIndex(r => r.id === d.id) % palette.length];
   const state = {era:'overview', view:'graph', query:'', exact:false, zoom:1, selected:null};
   let lastTrigger = null;
   const shade = document.createElement('div'); shade.className='mobile-detail-shade'; document.body.append(shade);
@@ -79,9 +79,9 @@
     const layout=[]; const lanes=[];
     for(const d of selected){
       const s=y(Math.max(start,d.start)),e=y(Math.min(end,d.end));
-      let lane=lanes.findIndex(last=>last<=s-22);
+      let lane=lanes.findIndex(last=>last<=s);
       if(lane===-1) lane=lanes.length;
-      lanes[lane]=Math.max(e,s+58);
+      lanes[lane]=Math.max(e,s+45);
       layout.push({d,s,e,lane});
     }
     const laneWidth=166;
@@ -149,7 +149,7 @@
       chart.append(banner);
     }
     chart.append(svg);
-    $('#chart-hint').textContent=`同一水平线代表同一年。${folds.length?`本图有 ${folds.length} 处明确标记的折叠时段。`:'本图采用统一的年份比例。'}${currentEra?'超出本时代的政权线段在边界裁切，标签保留完整起讫年。':'虚线仅提示历史关联，不表示完整继承关系。'}`;
+    $('#chart-hint').textContent=`同一水平线代表同一年。${folds.length?`本图有 ${folds.length} 处明确标记的折叠时段。`:'本图采用统一的年份比例。'}${currentEra&&!state.query?'超出本时代的政权线段在边界裁切，标签保留完整起讫年。':'虚线仅提示历史关联，不表示完整继承关系。'}`;
   }
 
   function renderList(selected) {
@@ -187,7 +187,7 @@
   }
 
   function selectRecord(id,trigger) {
-    const d=byId.get(id);if(!d)return;state.selected=id;lastTrigger=trigger||lastTrigger;
+    const d=byId.get(id);if(!d)return;state.selected=id;if (trigger && !$('#detail-panel').contains(trigger)) lastTrigger=trigger;
     document.querySelectorAll('[data-id]').forEach(el=>{const yes=el.dataset.id===id;el.classList.toggle('selected',yes);el.setAttribute('aria-pressed',String(yes));});
     const peers=records.filter(p=>p.id!==d.id&&p.start<d.end&&p.end>d.start).sort((a,b)=>Number(b.core)-Number(a.core)||a.start-b.start);
     const refs=(d.sourceIds||[]).map(s=>sourceMap.get(s)).filter(Boolean);
@@ -195,10 +195,21 @@
     $('#detail-content').innerHTML=`<button class="detail-close" aria-label="关闭朝代详情">×</button><div class="detail-top"><div class="detail-kicker"><i style="background:${color(d)}"></i>${esc(groupName(d))}</div><h3 id="detail-title" tabindex="-1">${esc(d.name)}</h3><div class="detail-dates">${esc(dateRange(d))}</div><span class="detail-symbol" aria-hidden="true">${esc(d.name[0])}</span></div><div class="detail-body"><div class="detail-meta"><div><span>存续跨度</span><strong>${d.approximate?'约 ':''}${duration} 年${d.ongoing?'，持续中':''}</strong></div><div><span>主要范围</span><strong>${esc(d.region||'见历史说明')}</strong></div></div><div class="detail-section"><h4>历史与纪年</h4><p>${esc(d.note||'采用常用历史纪年。起讫年份依政权建立与终结的常用口径记载。')}</p></div>${d.approximate?'<p class="detail-note">早期年代或建政边界具有不确定性。图中虚线标记为近似纪年，不应理解为已确定的具体年份。</p>':''}<div class="detail-section"><h4>同时存在的政权 · ${peers.length} 项</h4><div class="peer-list">${peers.slice(0,16).map(p=>`<button class="detail-tag" data-peer="${esc(p.id)}">${esc(p.name)}</button>`).join('')||'<p>当前收录范围内，无其他同期记录。</p>'}</div>${peers.length>16?`<p>另有 ${peers.length-16} 项，可在该时代或年代表中查看。</p>`:''}</div><div class="detail-section"><h4>参考来源</h4>${refs.map(s=>`<a class="detail-source" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)} ↗</a>`).join('')||'<p>参见页面下方的通用历史年表。</p>'}</div><div class="detail-section"><p style="font-size:9px;margin:0">“存续跨度”为起讫年份的距离，不计虚构的公元零年；不是首尾年均计入的纪年数。</p></div></div>`;
     $('#detail-content').querySelectorAll('[data-peer]').forEach(b=>b.addEventListener('click',()=>selectRecord(b.dataset.peer,b)));
     $('.detail-close').addEventListener('click',closeDetail);
-    if(matchMedia('(max-width:800px)').matches){$('#detail-panel').classList.add('is-open');shade.classList.add('visible');$('#detail-title').focus({preventScroll:true});}
+    if(matchMedia('(max-width:800px)').matches){$('#detail-panel').classList.add('is-open');shade.classList.add('visible');setModal(true);$('#detail-title').focus({preventScroll:true});}
   }
 
-  function closeDetail(){ $('#detail-panel').classList.remove('is-open');shade.classList.remove('visible');if(lastTrigger?.isConnected)lastTrigger.focus({preventScroll:true}); }
+  function setModal(open) {
+    const panel=$('#detail-panel');
+    if(open){panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');}
+    else{panel.removeAttribute('role');panel.removeAttribute('aria-modal');}
+    document.querySelectorAll('.masthead,.hero,.stats,.section-heading,.control-bar,.era-nav,.chart-card,.reading-notes,.source-section,.site-footer').forEach(el=>el.inert=open);
+    document.body.style.overflow=open?'hidden':'';
+  }
+  function closeDetail(){
+    const wasOpen=$('#detail-panel').classList.contains('is-open');
+    $('#detail-panel').classList.remove('is-open');shade.classList.remove('visible');setModal(false);
+    if(wasOpen&&lastTrigger?.isConnected)lastTrigger.focus({preventScroll:true});
+  }
   shade.addEventListener('click',closeDetail);
   $('#record-count').innerHTML=`${records.length}<span>项</span>`;
   const nav=$('#era-nav');
@@ -221,7 +232,17 @@
   const closeMethod=()=>{dialog.close();methodTrigger?.focus();};
   $('#close-method').addEventListener('click',closeMethod);$('#got-it').addEventListener('click',closeMethod);
   dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeMethod();}});
-  document.addEventListener('keydown',event=>{if(event.key==='Escape')closeDetail();if(event.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&!dialog.open){event.preventDefault();$('#search').focus();$('#explorer').scrollIntoView({behavior:motion()});}});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')closeDetail();
+    if($('#detail-panel').classList.contains('is-open')){
+      if(event.key==='Tab'){
+        const focusable=[...$('#detail-panel').querySelectorAll('button,a[href],[tabindex="0"]')];
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(event.shiftKey&&(document.activeElement===first||document.activeElement===$('#detail-title'))){event.preventDefault();last?.focus();}
+        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
+      }
+      return;
+    }
+    if(event.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&!dialog.open){event.preventDefault();$('#search').focus();$('#explorer').scrollIntoView({behavior:motion()});}});
   // Close mobile-only overlay when moving to desktop; keeps resize/repeated flows clean.
   matchMedia('(max-width:800px)').addEventListener('change',e=>{if(!e.matches)closeDetail();});
   window.HistoryTimeline = {ordinal,span,formatYear:year,makeScale,filterRecords,getState:()=>({...state}),records};
