@@ -1,5 +1,7 @@
 # 华夏脉络 · 中国历史朝代时间轴
 
+在线访问：[华夏脉络](https://kingxcode.github.io/china-dynasty-timeline/)
+
 一个无框架、无构建依赖的中国历史朝代与并行政权网页。使用纯 HTML、CSS、JavaScript 与 SVG，支持直接打开 `index.html` 或通过任意静态服务运行。
 
 ## 功能
