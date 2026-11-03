@@ -33,7 +33,7 @@ assert(!overlap(record('wu-zhou'),record('tang-restored')));
 // Capture pure date/scale helpers with a tiny DOM substitute, no browser dependency.
 function node(){return {attrs:{},children:[],classList:{add(){},remove(){},toggle(){}},style:{},dataset:{},addEventListener(){},setAttribute(k,v){this.attrs[k]=v},append(...items){this.children.push(...items)},replaceChildren(...items){this.children=items},querySelectorAll(){return []},focus(){},getBoundingClientRect(){return {}},innerHTML:'',textContent:'',tagName:'BODY'};}
 const dom=new Map();const get=s=>{if(!dom.has(s))dom.set(s,node());return dom.get(s)};
-const document={querySelector:get,querySelectorAll:()=>[],createElement:node,createElementNS:node,body:node(),addEventListener(){},activeElement:node(),documentElement:{clientWidth:390}};
+const document={querySelector:get,querySelectorAll:()=>[],createElement:node,createDocumentFragment:node,createElementNS:node,body:node(),addEventListener(){},activeElement:node(),documentElement:{clientWidth:390}};
 Object.assign(context,{document,Date,URL,matchMedia:()=>({matches:false,addEventListener(){}})});
 vm.runInNewContext(fs.readFileSync(path.join(root,'app.js'),'utf8'),context);
 const h=context.window.HistoryTimeline;
@@ -67,3 +67,4 @@ for(const viewport of [320,375,390,430]){
   }
 }
 console.log('PASS: 320 / 375 / 390 / 430 px mobile SVG fit, complete record count, same-year alignment.');
+

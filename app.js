@@ -70,8 +70,8 @@
   }
 
   function renderMobileGraph(selected) {
-    const chart=$('#chart'); chart.replaceChildren();
-    if(!selected.length)return;
+    const chart=$('#chart');
+    if(!selected.length){chart.replaceChildren();return;}
     const currentEra=eras.find(e=>e.id===state.era);
     let start=Math.min(...selected.map(d=>d.start)),end=Math.max(...selected.map(d=>d.end));
     if(currentEra&&!state.query){start=currentEra.start;end=currentEra.end;}
@@ -139,15 +139,17 @@
       const mid=(top+bottom)/2;
       bg.append(svgEl('text',{x:labelX+3,y:mid+3,class:'fold-label'},`⋯ ${gap} 年间隔 · 已压缩`));
     }}
-    chart.append(svg);
+    // Never force layout with an empty chart: a long page can lose its scroll position.
+    chart.replaceChildren(svg);
     $('#chart-hint').textContent=state.exact?'等比例刻度；各支流同年对齐。为避免重叠，名称标签用细引线连接到准确节点。':'手机紧凑刻度：所有分支一屏宽，同年对齐。各段比例不同，完整年代见名称下方。';
     if(currentEra&&!state.query)$('#chart-hint').textContent+=' 边界箭头表示超出所选时代，非真实起讫。';
   }
 
   function renderGraph(selected) {
     if(matchMedia('(max-width:800px)').matches){renderMobileGraph(selected);return;}
-    const chart=$('#chart'); chart.replaceChildren();
-    if (!selected.length) return;
+    const chart=$('#chart');
+    if (!selected.length) {chart.replaceChildren();return;}
+    const content=document.createDocumentFragment();
     const currentEra=eras.find(e=>e.id===state.era);
     let start=Math.min(...selected.map(d=>d.start)),end=Math.max(...selected.map(d=>d.end));
     if(currentEra&&!state.query){start=currentEra.start;end=currentEra.end;}
@@ -222,9 +224,9 @@
     if(state.era==='overview'&&!state.query){
       const banner=document.createElement('div');banner.className='tradition-banner';
       banner.innerHTML='<span class="symbol" aria-hidden="true">∿</span><div><strong>史前文化与三皇五帝</strong><p>史前考古文化与后世传说不是同一种时间证据。传说人物缺乏可核定的绝对年代，因此另列于精确时间轴之前，不虚设起讫年份。</p></div>';
-      chart.append(banner);
+      content.append(banner);
     }
-    chart.append(svg);
+    content.append(svg);chart.replaceChildren(content);
     $('#chart-hint').textContent=`同一水平线代表同一年。${folds.length?`本图有 ${folds.length} 处明确标记的折叠时段。`:'本图采用统一的年份比例。'}${currentEra&&!state.query?'超出本时代的政权线段在边界裁切，标签保留完整起讫年。':'虚线仅提示历史关联，不表示完整继承关系。'}`;
   }
 
@@ -253,6 +255,7 @@
     $('#result-status').textContent=`找到 ${selected.length} 条历史记录`;
     $('#zoom-label').textContent=`${Math.round(state.zoom*100)}%`;
     const mobile=matchMedia('(max-width:800px)').matches;
+    $('#chart-scroll').setAttribute('aria-label',mobile?'历史脉络图，随页面上下阅读':'历史脉络图，可上下和左右滚动');
     document.querySelector('.chart-footer span:last-child').textContent=mobile?'分支一屏宽 · 上下阅读':'横向滑动查看并立支流 ↔';
     $('#zoom-out').disabled=state.zoom<=.5;
     $('#zoom-in').disabled=state.zoom>=2;
@@ -281,7 +284,7 @@
     const panel=$('#detail-panel');
     if(open){panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');}
     else{panel.removeAttribute('role');panel.removeAttribute('aria-modal');}
-    document.querySelectorAll('.masthead,.hero,.stats,.section-heading,.control-bar,.era-nav,.chart-card,.reading-notes,.source-section,.site-footer').forEach(el=>el.inert=open);
+    document.querySelectorAll('.masthead,.hero,.stats,.section-heading,.control-bar,.era-nav,.mobile-era-picker,.chart-card,.reading-notes,.source-section,.site-footer').forEach(el=>el.inert=open);
     document.body.style.overflow=open?'hidden':'';
   }
   function closeDetail(){
@@ -327,8 +330,19 @@
     if(event.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&!dialog.open){event.preventDefault();$('#search').focus();$('#explorer').scrollIntoView({behavior:motion()});}});
   // Close mobile-only overlay when moving to desktop; keeps resize/repeated flows clean.
   matchMedia('(max-width:800px)').addEventListener('change',e=>{if(!e.matches)closeDetail();render();});
-  let resizeTimer;
-  window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(matchMedia('(max-width:800px)').matches&&state.view==='graph')renderGraph(filterRecords());},150);});
+  // Safari's toolbar/keyboard changes viewport HEIGHT during ordinary scrolling.
+  // Only a real layout WIDTH change can require a different mobile SVG.
+  // Do not use visualViewport width: pinch zoom must not rebuild the document.
+  let resizeTimer,layoutWidth=document.documentElement.clientWidth;
+  window.addEventListener('resize',()=>{
+    const width=document.documentElement.clientWidth;
+    if(width===layoutWidth)return;
+    layoutWidth=width;clearTimeout(resizeTimer);
+    resizeTimer=setTimeout(()=>{
+      if(matchMedia('(max-width:800px)').matches&&state.view==='graph')renderGraph(filterRecords());
+    },150);
+  });
   window.HistoryTimeline = {ordinal,span,formatYear:year,makeScale,renderMobileGraph,filterRecords,getState:()=>({...state}),records};
   defaultDetail();render();
 })();
+
