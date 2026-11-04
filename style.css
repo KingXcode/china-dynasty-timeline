@@ -31,3 +31,6 @@
  .mobile-era-picker select{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 32px 10px 12px;color:var(--ink);font-size:12px}
  .hero,.stats,.control-bar,.workspace,.reading-notes,.source-section{min-width:0}
 }
+
+/* Link the independent map without changing the timeline renderer. */
+.map-promo{display:flex;align-items:center;gap:22px;border:1px solid #cdd8cb;border-radius:8px;background:#edf0e5;padding:23px 27px;margin:-15px 0 38px}.map-promo-icon{font:48px Georgia;color:#7c947a}.map-promo>span:nth-child(2){display:grid;gap:5px}.map-promo small{font-size:9px;letter-spacing:1.5px;color:#829076}.map-promo strong{font:500 23px var(--serif);color:#4d6650}.map-promo>span:nth-child(2)>span{font-size:11px;color:#7c8672}.map-promo b{font:25px Georgia;margin-left:auto;color:#688169}.map-promo:hover{background:#e5ebdd}@media(max-width:560px){.map-promo{gap:14px;padding:18px;margin:-8px 0 29px}.map-promo-icon{font-size:35px}.map-promo strong{font-size:20px}.map-promo>span:nth-child(2)>span{font-size:10px;line-height:1.8}.masthead nav{gap:12px}.masthead nav>a[href="#explorer"]{display:none}}

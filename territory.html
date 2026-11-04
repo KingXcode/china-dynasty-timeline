@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="滑动年份，探索秦至清的历史疆域资料。并行政权同图呈现，保留来源时段、缺漏和历史地图的不确定性。">
+<meta name="theme-color" content="#f6f4ed"><title>疆域随时间 · 华夏脉络</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css?v=20261103-map1"><link rel="stylesheet" href="territory.css?v=20261103-map1">
+<script src="data.js?v=20261103-map1" defer></script><script src="territory.js?v=20261103-map1" defer></script>
+</head>
+<body class="territory-page">
+<a class="skip-link" href="#year-slider">跳到年份控制</a>
+<header class="masthead"><a class="brand" href="index.html"><span class="seal" aria-hidden="true">史</span><span>华夏脉络<small>CHRONICLES OF CHINA</small></span></a><nav aria-label="网站导航"><a href="index.html#explorer">朝代脉络 ↗</a><a href="#map-method">数据说明</a></nav></header>
+<main>
+<section class="map-intro"><div><p class="eyebrow">TERRITORIES THROUGH TIME · 秦至清</p><h1>时间流转，<span>疆域变迁。</span></h1></div><p>让同时存在的政权，出现在同一张地图上。<br>拖动年份，查看资料中的分合。</p></section>
+<div class="honesty-note"><span class="note-mark" aria-hidden="true">i</span><p><strong>这是来源区间示意，不是逐年考证的完整疆域图。</strong>年份可逐年选择，但同一来源时段的轮廓保持不变。空白表示本版未绘制或资料未知，不表示无人统治。</p></div>
+<section class="map-workspace" aria-label="历史疆域探索">
+<div class="map-column">
+<div class="map-card">
+<div class="map-topline"><div><span class="tiny-label">当前筛选年份</span><h2 id="map-year">公元 1142 年</h2></div><span id="coverage-count" class="coverage-tag" role="status">正在读取资料</span></div>
+<div id="map-stage" class="map-stage" tabindex="0" role="group" aria-label="历史地图。拖动平移、双指缩放，或使用下方缩放按钮；键盘加减缩放、方向键平移。">
+<svg id="territory-svg" viewBox="0 0 1000 780" aria-labelledby="svg-title svg-desc"><title id="svg-title">公元1142年历史疆域资料示意</title><desc id="svg-desc">有颜色的区域为来源记录，灰色区域并不代表无人统治。可从下方政权列表选择并查看来源。</desc><defs><pattern id="map-grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="#cbd5cf" stroke-width="0.8" stroke-dasharray="2 7"/></pattern></defs><rect width="1000" height="780" fill="#e7efec"/><g id="map-world"><g id="map-land"></g><g id="map-graticule" aria-hidden="true"></g><g id="map-polygons"></g><g id="map-labels" aria-hidden="true"></g></g></svg>
+<div class="north-mark" aria-hidden="true">N<br><span>↑</span></div><span class="sea-label" aria-hidden="true">东 亚 及 周 边</span>
+<div id="map-loading" class="map-loading" role="status"><span class="loading-dot"></span>正在读取疆域资料…</div>
+<div id="map-error" class="map-error" role="alert" hidden><strong>这一时段暂未加载成功</strong><p>请检查网络后重试。未加载时不会保留上一个年份的疆域。</p><button id="retry-map" type="button">重新加载</button></div>
+<div class="map-tools" role="group" aria-label="地图缩放"><button id="map-zoom-in" aria-label="放大地图">＋</button><button id="map-zoom-out" aria-label="缩小地图">−</button><button id="map-reset" aria-label="恢复东亚全景">↺</button></div>
+</div>
+<div class="map-caption"><span>拖动平移 · 双指缩放 · 点颜色看来源</span><button id="toggle-labels" type="button" aria-pressed="true">名称 开</button></div>
+<p class="map-attribution">疆域：<a href="https://github.com/Seshat-Global-History-Databank/cliopatria/tree/5f433377139a6eeaeacbdc894b70f8805b72c8b5" target="_blank" rel="noopener noreferrer">Cliopatria v0.2.1</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>　陆地：<a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noopener noreferrer">Natural Earth / 公共领域</a></p>
+</div>
+<div class="year-dock">
+<div class="year-control-top"><button id="play-years" class="play-button" aria-label="按资料变化自动浏览年份" aria-pressed="false">▶ <span>播放</span></button><div class="year-stepper"><button id="previous-year" aria-label="前一年">−1</button><output id="dock-year">1142 年</output><button id="next-year" aria-label="后一年">+1</button></div><button id="jump-toggle" aria-expanded="false" aria-controls="year-form">输入年份</button></div>
+<label class="sr-only" for="year-slider">年份，公元前221年至公元1911年</label><input id="year-slider" type="range" min="-221" max="1910" step="1" value="1141"><div class="slider-captions"><span>前221 · 秦</span><span>三国</span><span>隋唐</span><span>宋元</span><span>1911 · 清</span></div>
+<form id="year-form" hidden><label for="year-era" class="sr-only">公元纪年</label><select id="year-era"><option value="ce">公元</option><option value="bce">公元前</option></select><label for="year-number" class="sr-only">年份数字</label><input id="year-number" type="number" inputmode="numeric" min="1" max="1911" value="1142" required><button type="submit">前往</button><span id="year-form-error" role="alert"></span></form>
+<div class="snapshot-nav" aria-label="历史时段快捷入口"><button data-year="-210">秦</button><button data-year="100">汉</button><button data-year="250">三国</button><button data-year="500">南北朝</button><button data-year="750">唐</button><button data-year="950">五代十国</button><button data-year="1100">宋辽夏</button><button data-year="1142">宋金并立</button><button data-year="1320">元</button><button data-year="1400">明</button><button data-year="1750">清</button></div>
+<div class="change-nav"><button id="previous-change">← 上一资料变化</button><button id="next-change">下一资料变化 →</button></div>
+</div>
+</div>
+<aside class="map-aside">
+<section id="year-warning" class="year-warning" aria-labelledby="year-warning-title"><h3 id="year-warning-title">这一年的资料边界</h3><div id="year-warning-content">正在核对来源时段…</div></section>
+<section class="polity-section" aria-labelledby="polity-title"><div class="aside-heading"><h3 id="polity-title">图中政权 / 来源名称</h3><span id="polity-count"></span></div><p class="aside-hint">点击名称查看这块轮廓来自哪个时段。</p><div id="polity-list" class="polity-list"></div></section>
+<section id="polity-detail" class="polity-detail" aria-labelledby="detail-heading" hidden></section>
+<details class="chronology-panel"><summary>对照：年代表中的同期政权 <span id="chronology-count"></span></summary><p>此处来自本站年表，不是地理数据。<strong>列在这里不代表地图有对应轮廓。</strong>两套资料的起讫年份可能不同。</p><div id="chronology-list"></div><a href="index.html#explorer">打开完整年表 ↗</a></details>
+</aside>
+</section>
+<section id="map-method" class="map-method"><p class="eyebrow">READ THE SOURCE, NOT JUST THE SHAPE</p><h2>颜色有依据，空白有解释。</h2><div class="method-grid"><article><span>01 / 时间</span><h3>逐年筛选，分段资料</h3><p>严格按来源的 FromYear ≤ 所选年份 ≤ ToYear 读取，不插值、不把静态轮廓变形成假想的年度边界。“上一 / 下一资料变化”跳到本版数据记录发生改变的年份。公元纪年无零年。</p></article><article><span>02 / 缺漏</span><h3>并非全部政权与全部领土</h3><p>本版选取中国历史及部分相邻政权的来源记录，不按现代国界裁切。原项目一般不收面积不足5,000平方公里或存续不足50年的政权，但有例外；本版还存在区域筛选遗漏。没有着色的陆地不能解读为无主地。</p></article><article><span>03 / 误差</span><h3>轮廓与名称都需要核对</h3><p>原数据存在采样偏差、政权名称混用和起讫年错位，例如“西晋”名称延续到425年、北宋记录延续到1138年。页面保留来源原名和来源区间，并提示已知问题，不冒充已校订的历史地图。边界不确定性没有被原数据量化。</p></article><article><span>04 / 地理</span><h3>历史资料，不表达现代主张</h3><p>颜色仅区分来源名称，不代表正统、族群或现代领土归属。底图只有公共领域的现代陆地轮廓，未使用现代国界；现代海岸线不是当时海岸线。采用墨卡托投影，不能用屏幕面积比较疆域大小。</p></article></div>
+<details class="source-details"><summary>完整来源、版本与加工记录</summary><p>疆域：Cliopatria / Seshat Global History Databank，<a href="https://doi.org/10.1038/s41597-025-04516-9" target="_blank" rel="noopener noreferrer">Seshat 团队（2025），Cliopatria: A global dataset of political entities from 3400 BCE to 2024 CE</a>。使用 v0.2.1，固定提交 <a href="https://github.com/Seshat-Global-History-Databank/cliopatria/tree/5f433377139a6eeaeacbdc894b70f8805b72c8b5" target="_blank" rel="noopener noreferrer">5f433377139a6eeaeacbdc894b70f8805b72c8b5</a>，许可 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>。</p><p>本站修改：选取区域相关 POLITY 记录、按世纪拆分文件、加入中文名称、颜色及问题提示。未修改来源坐标、起讫年或原始名称，未合成缺失的疆域。与本站年表明显矛盾的记录不着色，并逐年明确说明。原数据中的 Wikidata 编号有误配，本版不把它作为历史身份认证。</p><p>底图：Natural Earth 1:110m Land，固定提交 ca96624a56bd078437bca8184e78163e5039ad19，公共领域。仅提取陆地几何，不绘现代国家边界。<a href="map-data/README.md">查看可复现的数据清单与方法 ↗</a></p></details>
+</section>
+</main>
+<footer class="site-footer"><a class="brand" href="index.html"><span class="seal">史</span><span>华夏脉络</span></a><p>在时间里，读懂中国。</p><a href="index.html#explorer">返回朝代脉络 ↗</a></footer>
+<noscript><div class="noscript">地图交互需要启用 JavaScript。来源和范围说明可在本页下方阅读。</div></noscript>
+</body></html>

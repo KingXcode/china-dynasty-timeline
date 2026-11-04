@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f6f4ed">
   <title>华夏脉络 · 中国历史朝代时间轴</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=20261103-scroll3">
+  <link rel="stylesheet" href="style.css?v=20261103-map1">
   <script src="data.js?v=20261104-modern4" defer></script>
   <script src="app.js?v=20261104-modern4" defer></script>
 </head>
@@ -15,7 +15,7 @@
 <a class="skip-link" href="#explorer">跳到历史脉络图</a>
 <header class="masthead">
   <a class="brand" href="#" aria-label="华夏脉络首页"><span class="seal" aria-hidden="true">史</span><span>华夏脉络 <small>CHRONICLES OF CHINA</small></span></a>
-  <nav aria-label="网站导航"><a href="#explorer">探索时间轴 <span>↘</span></a><button id="method-button" class="text-button">如何阅读</button><a href="https://github.com/KingXcode/china-dynasty-timeline" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 查看项目源码">GitHub ↗</a></nav>
+  <nav aria-label="网站导航"><a href="territory.html">疆域地图 ↗</a><a href="#explorer">探索时间轴 <span>↘</span></a><button id="method-button" class="text-button">如何阅读</button><a href="https://github.com/KingXcode/china-dynasty-timeline" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 查看项目源码">GitHub ↗</a></nav>
 </header>
 <main>
   <section class="hero" aria-labelledby="page-title">
@@ -23,6 +23,7 @@
     <div class="hero-art" aria-hidden="true"><div class="art-label">HISTORY IS NOT A SINGLE LINE</div><svg viewBox="0 0 480 290"><defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f6f4ed" stop-opacity="0"/><stop offset="1" stop-color="#f6f4ed"/></linearGradient></defs><path class="art-grid" d="M0 62H480M0 138H480M0 214H480"/><path class="art-main" d="M165 0V72C165 108 165 110 165 138V290"/><path class="art-branch jade" d="M165 62C165 98 315 98 315 138V214C315 254 165 254 165 290"/><path class="art-branch ochre" d="M165 62C165 112 55 112 55 151V188C55 228 165 228 165 270"/><path class="art-branch blue" d="M315 138C315 168 425 168 425 202V290"/><circle cx="165" cy="62" r="9" class="art-node"/><circle cx="165" cy="214" r="9" class="art-node"/><circle cx="315" cy="138" r="8" class="art-node green"/><circle cx="55" cy="151" r="7" class="art-node yellow"/><circle cx="425" cy="202" r="7" class="art-node slate"/><text x="188" y="65">承续</text><text x="336" y="140">并立</text><text x="78" y="155">分流</text><text x="188" y="218">汇合</text><rect x="0" y="245" width="480" height="45" fill="url(#fade)"/></svg><div class="art-caption">不止朝代更替，也看见同一时代的不同支流。</div></div>
   </section>
   <section class="stats" aria-label="资料概况"><div><strong>4,000<span>余年</span></strong><p>从夏商周到现代</p></div><div><strong id="record-count">—<span>个</span></strong><p>朝代、政权与历史阶段</p></div><div><strong>01<span>条</span></strong><p>共享年代，理解并立</p></div><p class="stats-note">以常用纪年为基础<br>存疑年代与不同口径均附说明 <span>↗</span></p></section>
+  <a class="map-promo" href="territory.html"><span class="map-promo-icon" aria-hidden="true">◎</span><span><small>NEW · 秦至清</small><strong>把历史，放回地图里。</strong><span>滑动年份，查看并行政权的疆域资料。来源区间与数据缺漏均有说明。</span></span><b aria-hidden="true">↗</b></a>
   <section id="explorer" class="explorer" aria-labelledby="explorer-title">
     <div class="section-heading"><div><p class="eyebrow">EXPLORE THE TIMELINE</p><h2 id="explorer-title">历史，沿时间展开</h2></div><p>点击节点，读懂一个朝代。<br>选择时代，展开更细的历史支流。</p></div>
     <div class="control-bar"><div class="view-tabs" role="group" aria-label="呈现方式"><button id="graph-view" aria-pressed="true"><span>⑂</span> 脉络图</button><button id="list-view" aria-pressed="false"><span>☷</span> 年代表</button></div><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" placeholder="搜索朝代、政权或地区" aria-label="搜索朝代、政权或地区"><kbd>/</kbd></label><button id="reset" class="subtle-button" title="清除筛选并回到总览">重置 ↺</button></div>
@@ -50,5 +51,4 @@
 <noscript><div class="noscript">此页面的交互时间轴需要启用 JavaScript。项目数据与来源也可在 GitHub 的 data.js 中查阅。</div></noscript>
 </body>
 </html>
-
 

@@ -63,3 +63,19 @@ GitHub Pages 使用 `main` 分支根目录，`.nojekyll` 确保按静态文件�
 
 公开参考资料版权归各原作者所有。页面文字为摘要，不复制用户参考照片；未将参考照片上传到仓库。
 
+
+## 疆域地图（首版）
+
+访问 [疆域随时间](https://kingxcode.github.io/china-dynasty-timeline/territory.html)。秦至清（前221–1911），支持逐年筛选、拖动/双指缩放、政权点选、来源区间、输入年份、同期年表对照和资料变化播放。手机竖向浏览优先，原时间轴保持独立。
+
+**不是逐年考证的完整疆域图。** 使用固定版本 Cliopatria v0.2.1 / CC BY 4.0，选取132个来源名称、877条区间记录；保留原始坐标，不编造缺失轮廓。已知年代错位会明确提示并不着色，来源多年共用的轮廓不会被伪装成年度新数据。详见 [数据清单](map-data/README.md)。底图为公共领域 Natural Earth 陆地，无第三方瓦片或脚本。
+
+地图需要 HTTP(S) 静态服务（fetch 本地分片），不能仅用 file:// 打开。按原说明启动 Python 静态服务器即可。
+
+新增检查：
+
+```sh
+node --check territory.js
+node tests/territory.test.cjs
+node tests/territory-dom.test.cjs
+```
