@@ -28,6 +28,15 @@ assert(overlap(record('southern-song'),record('jin-jurchen')));
 assert(overlap(record('eastern-jin'),record('northern-wei')));
 assert.equal(record('western-jin').end,316);
 assert.equal(record('qing').start,1636);
+assert.equal(record('roc').name,'中华民国（大陆时期）');
+assert.equal(record('roc').start,1912);
+assert.equal(record('roc').end,1949);
+assert(!record('roc').ongoing,'The mainland period must not render to the present');
+assert.equal(record('roc').period,true);
+assert.equal(record('prc').start,1949);
+assert.equal(record('prc').ongoing,true);
+assert(record('roc').note.includes('迁至台湾')&&record('roc').note.includes('继续'),'Preserve institutional continuity in the note');
+assert(record('prc').note.includes('1949年10月1日'),'Precise founding date in note');
 assert(!overlap(record('tang-first'),record('wu-zhou')));
 assert(!overlap(record('wu-zhou'),record('tang-restored')));
 // Capture pure date/scale helpers with a tiny DOM substitute, no browser dependency.
@@ -47,6 +56,7 @@ for(const selected of [ds.filter(d=>d.core),ds]){
   for(let y=start;y<=end;y++)if(y!==0){assert(scale.y(y)>last,'Scale is monotone at '+y);last=scale.y(y);}
   for(const f of scale.folds){assert(f.start<f.end);assert(!selected.some(d=>(d.start>f.start&&d.start<f.end)||(d.end>f.start&&d.end<f.end)),'Fold does not hide boundaries');}
 }
+assert.equal(h.records.find(d=>d.id==='roc').end,1949,'Runtime must keep historical endpoint');
 assert.equal(h.filterRecords().length,ds.filter(d=>d.core).length);
 console.log(`PASS: ${ds.length} records, ${sources.length} sources, ${eras.length} eras; data, chronology, overlaps, and scale checks.`);
 
@@ -67,4 +77,5 @@ for(const viewport of [320,375,390,430]){
   }
 }
 console.log('PASS: 320 / 375 / 390 / 430 px mobile SVG fit, complete record count, same-year alignment.');
+
 
