@@ -257,29 +257,9 @@ window.HISTORY_DATA = {
       "url": "https://www.seaa-web.org/sites/default/files/conferences/2014/programm2014-05-04.pdf"
     },
     {
-      "id": "roc-mainland-period",
-      "title": "首都博物馆：民国时期（1912—1949）",
-      "url": "https://capitalmuseum.org.cn/exhibition/c6c19ad37dc64b829b9d7f5a4c36a66b"
-    },
-    {
-      "id": "roc-relocation-1949",
-      "title": "档案管理局：1949年政府迁台",
-      "url": "https://art.archives.gov.tw/tw/art/1501.html"
-    },
-    {
-      "id": "taiwan-current-administration",
-      "title": "行政院：迁台与现行实际管辖范围",
-      "url": "https://www.ey.gov.tw/state/4447F4A951A1EC45/094b1d53-de8d-4393-bde6-ab092969cce4"
-    },
-    {
       "id": "prc-founded-1949",
       "title": "中央政府驻港联络办：1949年10月1日中华人民共和国成立",
       "url": "https://www.locpg.gov.cn/zggq/2014-01/04/c_125956423.htm"
-    },
-    {
-      "id": "hainan-transition-1950",
-      "title": "国防部：海南岛战事于1950年5月结束",
-      "url": "https://www.mod.gov.cn/gfbw/gfjy_index/js_214151/4839572.html"
     }
   ],
   "eras": [
@@ -365,7 +345,7 @@ window.HISTORY_DATA = {
       "name": "近现代",
       "start": 1912,
       "end": 2026,
-      "description": "大陆历史分期：中华民国大陆时期1912—1949，中华人民共和国1949年至今；1949年后迁台与实际治理见详情注释。"
+      "description": "中华民国1912—1949，中华人民共和国1949年至今。"
     },
     {
       "id": "regional",
@@ -1623,19 +1603,14 @@ window.HISTORY_DATA = {
     },
     {
       "id": "roc",
-      "name": "中华民国（大陆时期）",
-      "english": "Republic of China — mainland period",
+      "name": "中华民国",
+      "english": "Republic of China",
       "start": 1912,
       "end": 1949,
       "group": "modern",
-      "region": "以中国大陆历史分期为范围",
-      "note": "本条采用1912—1949年的大陆时期分期。1949年中华人民共和国成立，国民党领导的政府于同年12月迁至台湾。迁台后，相关政府机构继续以中华民国名称运作，现主要实际管辖台湾、澎湖、金门、马祖等地；后续治理在此注释说明，不延长本条大陆时期条带。1949是历史分期边界，不表示各地在同一天完成控制权转移，例如海南战事至1950年5月结束。",
-      "sourceIds": [
-        "roc-mainland-period",
-        "roc-relocation-1949",
-        "taiwan-current-administration",
-        "hainan-transition-1950"
-      ],
+      "region": "中国",
+      "note": "",
+      "sourceIds": [],
       "core": true,
       "period": true
     },
@@ -1649,8 +1624,7 @@ window.HISTORY_DATA = {
       "region": "中国大陆",
       "note": "1949年10月1日中华人民共和国成立，延续至今。本图以该日所在年份作为起点，不表示各地在同日完成控制权转移。现代部分用于历史分期对照，不属于帝制朝代。",
       "sourceIds": [
-        "prc-founded-1949",
-        "hainan-transition-1950"
+        "prc-founded-1949"
       ],
       "core": true,
       "ongoing": true
@@ -1923,7 +1897,7 @@ window.HISTORY_DATA = {
     "version": "2026-11-04",
     "coverage": "扩展学习年表，收录主要王朝、传统十六国、五代十国及选取的诸侯国、区域政权；不是穷尽所有短期割据与地方政权的名录。",
     "dating": "负数表示公元前，正数表示公元；无公元0年。条带采用常用建政、正式国号或政权终结界点，异说见各条注释。起止年相接并不表示全年同时统治。",
-    "regions": "地域仅为粗略活动中心，不是固定边界。传统、考古文化、时代分期、王朝与现代国家必须区分。 近现代条带采用大陆历史分期，1949年后的台湾实际治理在注释中另作说明。",
+    "regions": "地域仅为粗略活动中心，不是固定边界。传统、考古文化、时代分期、王朝与现代国家必须区分。",
     "presentYear": 2026
   }
 };
